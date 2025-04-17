@@ -1,0 +1,19 @@
+
+CREATE TABLE IF NOT EXISTS invoices (
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+     client_id BIGINT NOT NULL,
+     total DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+INSERT INTO invoices (client_id, total) VALUES
+ (1, 300000.00),
+ (2, 95000.00);
+
+CREATE TABLE IF NOT EXISTS returns (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    invoice_id BIGINT NOT NULL,
+    product VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL,
+    returned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );

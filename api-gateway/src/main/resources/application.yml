@@ -1,0 +1,32 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: api-gateway
+
+tcp:
+  services:
+    auth:
+      host: auth-service
+      port: 4001
+    supplier:
+      host: supplier-service
+      port: 4005
+    billing:
+      host: billing-service
+      port: 4003
+    inventory:
+      host: inventory-service
+      port: 4002
+    client:
+      host: client-service
+      port: 4004
+
+jwt:
+  secret: my-super-secret-key-auth-1234567890
+
+
+
+
+

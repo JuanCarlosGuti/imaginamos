@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: supplier-service
+
+  datasource:
+    url: jdbc:mysql://supplier-db:3306/supplierdb
+    username: root
+    password: Wire2681
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+# Config opcional si usas TCP
+supplier:
+  tcp:
+    port: 4005
+
+
+
+

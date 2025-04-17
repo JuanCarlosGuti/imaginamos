@@ -1,0 +1,169 @@
+version: '3.8'
+
+services:
+  # PostgreSQL para auth-service
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Wire2681
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./auth-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - micro-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - micro-net
+
+  # MySQL para supplier-service
+  supplier-db:
+    image: mysql:8.4
+    container_name: supplier-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Wire2681
+      MYSQL_DATABASE: supplierdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./supplier-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - micro-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+  supplier-service:
+    build:
+      context: ./supplier-service
+    container_name: supplier-service
+    depends_on:
+      supplier-db:
+        condition: service_healthy
+    networks:
+      - micro-net
+
+  # MySQL para client-service
+  client-db:
+    image: mysql:8.4
+    container_name: client-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Wire2681
+      MYSQL_DATABASE: clientdb
+    ports:
+      - "3309:3306"
+    volumes:
+      - ./client-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - micro-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pWire2681" ]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+
+  client-service:
+    build:
+      context: ./client-service
+    container_name: client-service
+    depends_on:
+      client-db:
+        condition: service_healthy
+    networks:
+      - micro-net
+
+  # MySQL para inventory-service
+  inventory-db:
+    image: mysql:8.4
+    container_name: inventory-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Wire2681
+      MYSQL_DATABASE: inventorydb
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./inventory-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - micro-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    container_name: inventory-service
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+    networks:
+      - micro-net
+
+  # MySQL para billing-service
+  billing-db:
+    image: mysql:8.4
+    container_name: billing-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Wire2681
+      MYSQL_DATABASE: billingdb
+    ports:
+      - "3311:3306"
+    volumes:
+      - ./billing-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - micro-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+  billing-service:
+    build:
+      context: ./billing-service
+    container_name: billing-service
+    depends_on:
+      billing-db:
+        condition: service_healthy
+    networks:
+      - micro-net
+
+  # Gateway
+  gateway-service:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8085:8085"
+    depends_on:
+      - auth-service
+      - supplier-service
+      - client-service
+      - inventory-service
+      - billing-service
+    networks:
+      - micro-net
+
+networks:
+  micro-net:
+    driver: bridge
