@@ -18,7 +18,7 @@ public class TcpServer {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("✅ TCP Server de clientes escuchando en puerto " + port);
+            System.out.println(" TCP Server de clientes escuchando en puerto " + port);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
